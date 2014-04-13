@@ -67,7 +67,15 @@ int get_random (int min, int max)
 int checkWinner (void)
 {
 	int l, c;
-	int winner = 0;
+	int winner = -1;
+
+	/* Check if there is no possible moves left */
+	for (l = 0; l < 3; l++) {
+		for (c = 0; c < 3; c++) {
+			if (Game[l][c] == EMPTY)
+				winner = 0;
+		}
+	}
 
 	/* Horizontal */
 	for (l = 0; l < 3; l++) {
@@ -103,6 +111,12 @@ void process (int line, int column)
 	/* Store user's movement */
 	printf("User movement: line %d column %d\n", line, column);
 	Game[line][column] = CROSS;
+
+	/* Check if there is a winner */
+	Winner = checkWinner();
+
+	if (Winner != 0)
+		return;
 
 	/* Generate CPU random movement */
 	do {
