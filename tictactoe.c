@@ -3,7 +3,7 @@
  Name        : TicTacToe.c
  Author      : Eduardo Vieira
  Version     :
- Copyright   : Your copyright notice
+ Copyright   : Licensed under the beer license
  Description : Tic Tac Toe Game
  ============================================================================
  */
