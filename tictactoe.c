@@ -21,7 +21,7 @@
 #define WINDOW_WIDTH		640
 #define WINDOW_HEIGHT		640
 
-int Keep_Running = 1;
+int Winner = 0;
 int Game[3][3];
 
 void getLineAndColumn (int *line, int *column, Uint16 x, Uint16 y)
@@ -48,7 +48,7 @@ void input (int *line, int *column)
 			case SDL_MOUSEMOTION:
 				break;
 			case SDL_QUIT:
-				Keep_Running = 0;
+				Winner = -1;
 				break;
 			default:
 				fprintf(stderr, "Unkown event %u\n", event.type);
@@ -62,6 +62,30 @@ int get_random (int min, int max)
 {
 	int range = ( max - min ) + 1;
 	return ((rand() / (RAND_MAX + 1.0)) * range) + min;
+}
+
+int checkWinner (void)
+{
+	int l, c;
+	int winner = 0;
+
+	/* Horizontal */
+	for (l = 0; l < 3; l++) {
+		if (Game[l][0] == Game[l][1] && Game[l][0] == Game[l][2])
+			winner = Game[l][0];
+	}
+	/* Vertical */
+	for (c = 0; c < 3; c++) {
+		if (Game[0][c] == Game[1][c] && Game[0][c] == Game[2][c])
+			winner = Game[0][c];
+	}
+	/* Diagonal */
+	if (Game[0][0] == Game[1][1] && Game[0][0] == Game[2][2])
+		winner = Game[0][0];
+	if (Game[2][0] == Game[2][2] && Game[2][0] == Game[0][2])
+		winner = Game[2][0];
+
+	return winner;
 }
 
 void process (int line, int column)
@@ -89,6 +113,9 @@ void process (int line, int column)
 	/* Store computer movement */
 	printf("Computer movement: line %d column %d\n", l, c);
 	Game[l][c] = CIRCLE;
+
+	/* Check if there is a winner */
+	Winner = checkWinner();
 }
 
 int main (int argc, char *argv[])
@@ -136,7 +163,15 @@ int main (int argc, char *argv[])
 
 		/* Process user input */
 		process(line, column);
-	} while (Keep_Running);
+	} while (Winner == 0);
+
+	if (Winner > 0) {
+		/* Print who is the winner */
+		printf("Winner: %s\n", (Winner == CROSS) ? "Cross" : "Circle");
+	}
+	else {
+		printf("There is not winner\n");
+	}
 
 	atexit(SDL_Quit);
 
