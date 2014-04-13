@@ -1,0 +1,6 @@
+.project
+.cproject
+tictactoe
+*.dep
+*.o
+Debug/
