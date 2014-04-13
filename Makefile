@@ -19,4 +19,4 @@ $(DEPS): %.dep: %.c Makefile
 	$(CC) $(CFLAGS) $(INCLUDE) -MM $< > $@
 
 clean:
-	-rm -f *~ *.o $(TARGET)
+	-rm -f *~ *.o *.dep $(TARGET)
