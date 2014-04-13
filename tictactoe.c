@@ -26,16 +26,17 @@ int Game[3][3];
 
 void getLineAndColumn (int *line, int *column, Uint16 x, Uint16 y)
 {
-	*column = x / (WINDOW_WIDTH / 3);
-	*line = y / (WINDOW_HEIGHT / 3);
-	printf("Column %d Line %d\n", *column, *line);
+	*line = x / (WINDOW_WIDTH / 3);
+	*column = y / (WINDOW_HEIGHT / 3);
 }
 
 void input (int *line, int *column)
 {
 	SDL_Event event;
 
-	while ( SDL_PollEvent(&event) ) {
+	*line = *column = -1;
+
+	if ( SDL_WaitEvent(&event) ) {
 		switch (event.type) {
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
@@ -71,7 +72,12 @@ void process (int line, int column)
 	if (Game[line][column] != EMPTY)
 		return;
 
+	/* Negative indicates user didn't do anything */
+	if (line < 0 || column < 0)
+		return;
+
 	/* Store user's movement */
+	printf("User movement: line %d column %d\n", line, column);
 	Game[line][column] = CROSS;
 
 	/* Generate CPU random movement */
@@ -81,6 +87,7 @@ void process (int line, int column)
 	} while (Game[l][c] != EMPTY);
 
 	/* Store computer movement */
+	printf("Computer movement: line %d column %d\n", l, c);
 	Game[l][c] = CIRCLE;
 }
 
