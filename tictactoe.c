@@ -89,7 +89,7 @@ int checkWinner (void)
 	/* Diagonal */
 	if (Game[0][0] == Game[1][1] && Game[0][0] == Game[2][2])
 		winner = Game[0][0];
-	if (Game[2][0] == Game[2][2] && Game[2][0] == Game[0][2])
+	if (Game[2][0] == Game[1][1] && Game[2][0] == Game[0][2])
 		winner = Game[2][0];
 
 	return winner;
