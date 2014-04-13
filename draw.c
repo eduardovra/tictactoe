@@ -8,9 +8,9 @@
 
 #include "draw.h"
 
-#define GRID_COLOR 0xffffffff
-#define CIRCLE_COLOR 0x0000ff00
-#define CROSS_COLOR 0x0000ff00
+#define GRID_COLOR SDL_MapRGB(SDL_GetVideoSurface()->format, 0xff,0xff,0xff)
+#define CIRCLE_COLOR SDL_MapRGB(SDL_GetVideoSurface()->format, 0xff,0,0)
+#define CROSS_COLOR SDL_MapRGB(SDL_GetVideoSurface()->format, 0,0xff,0)
 
 #define CIRCLE_SIZE 50
 #define CROSS_SIZE 50
@@ -23,7 +23,7 @@ static void validate_cord (SDL_Surface * screen, Sint32 x, Sint32 y)
 	assert(y <= screen->h);
 }
 
-void drawPixel (SDL_Surface *screen, Sint32 x, Sint32 y, Uint32 color)
+static void drawPixel (SDL_Surface *screen, Sint32 x, Sint32 y, Uint32 color)
 {
 	Uint16 *bufp;
 
@@ -36,7 +36,7 @@ void drawPixel (SDL_Surface *screen, Sint32 x, Sint32 y, Uint32 color)
 	*bufp = color;
 }
 
-void drawLine (SDL_Surface *screen, Sint32 x0, Sint32 y0, Sint32 x1, Sint32 y1, Uint32 color)
+static void drawLine (SDL_Surface *screen, Sint32 x0, Sint32 y0, Sint32 x1, Sint32 y1, Uint32 color)
 {
 	/* Bresenham's line algorithm */
 	int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
@@ -52,7 +52,7 @@ void drawLine (SDL_Surface *screen, Sint32 x0, Sint32 y0, Sint32 x1, Sint32 y1, 
 	}
 }
 
-void drawCircle (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 pixel)
+static void drawCircle (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 pixel)
 {
 	// if the first pixel in the screen is represented by (0,0) (which is in sdl)
 	// remember that the beginning of the circle is not in the middle of the pixel
@@ -100,7 +100,7 @@ void drawCircle (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 pi
 	}
 }
 
-void drawCross (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 color)
+static void drawCross (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 color)
 {
 	int i, x, y;
 
@@ -113,7 +113,7 @@ void drawCross (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 col
 	}
 }
 
-void drawGrid (SDL_Surface *screen)
+static void drawGrid (SDL_Surface *screen)
 {
 	int i, x, y;
 
@@ -154,9 +154,35 @@ void draw (SDL_Surface *screen, int game[3][3])
 			if (game[line][column] == CROSS)
 				drawCross(screen, x, y, CROSS_SIZE, CROSS_COLOR);
 			else if (game[line][column] == CIRCLE)
-				drawCircle (screen, x, y, CIRCLE_SIZE, CIRCLE_COLOR);
+				drawCircle(screen, x, y, CIRCLE_SIZE, CIRCLE_COLOR);
 		}
 	}
+
+	if ( SDL_MUSTLOCK(screen) ) {
+		SDL_UnlockSurface(screen);
+	}
+
+	SDL_UpdateRect(screen, 0, 0, 0, 0);
+}
+
+void drawWinner (SDL_Surface *screen, int winner)
+{
+	int x = screen->w / 2, y = screen->h / 2;
+
+	if ( SDL_MUSTLOCK(screen) ) {
+		if ( SDL_LockSurface(screen) < 0 ) {
+			return;
+		}
+	}
+
+	/* Clear screen */
+	SDL_FillRect(screen, NULL, 0);
+	SDL_Flip(screen);
+
+	if (winner == CROSS)
+		drawCross(screen, x, y, CROSS_SIZE * 2, CROSS_COLOR);
+	else if (winner == CIRCLE)
+		drawCircle(screen, x, y, CIRCLE_SIZE * 2, CIRCLE_COLOR);
 
 	if ( SDL_MUSTLOCK(screen) ) {
 		SDL_UnlockSurface(screen);

@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> /* sleep */
 #include <time.h>
 
 #include <SDL.h>
@@ -186,6 +185,10 @@ int main (int argc, char *argv[])
 	else {
 		printf("There is no winner\n");
 	}
+
+	/* Shows winner */
+	drawWinner(screen, Winner);
+	SDL_Delay(2000);
 
 	atexit(SDL_Quit);
 
