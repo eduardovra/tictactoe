@@ -102,11 +102,14 @@ void drawCircle (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 pi
 
 void drawCross (SDL_Surface *surface, int n_cx, int n_cy, int radius, Uint32 color)
 {
-	int i;
+	int i, x, y;
 
-	for (i = 0; i < radius * 2; i++) {
+	for (i = -radius; i <= radius; i++) {
 		drawPixel(surface, i + n_cx, i + n_cy, color);
-		drawPixel(surface, i + n_cx, (radius * 2) - i + n_cy, color);
+	}
+
+	for (x = -radius, y = radius; x <= radius; x++, y--) {
+		drawPixel(surface, x + n_cx, y + n_cy, color);
 	}
 }
 

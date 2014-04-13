@@ -184,7 +184,7 @@ int main (int argc, char *argv[])
 		printf("Winner: %s\n", (Winner == CROSS) ? "Cross" : "Circle");
 	}
 	else {
-		printf("There is not winner\n");
+		printf("There is no winner\n");
 	}
 
 	atexit(SDL_Quit);
