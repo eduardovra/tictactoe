@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-Wall -g -fPIC -Werror -Wfatal-errors
 LDFLAGS=`sdl-config --static-libs` -lSDL_ttf -lrt
 INCLUDE=`sdl-config --cflags`
-SRCS=TicTacToe.c draw.c
+SRCS=tictactoe.c draw.c
 OBJS=$(SRCS:.c=.o)
 DEPS=$(SRCS:.c=.dep)
 TARGET=tictactoe
