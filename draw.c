@@ -130,6 +130,7 @@ static void drawGrid (SDL_Surface *screen)
 	}
 }
 
+/* Draw game window */
 void draw (SDL_Surface *screen, int game[3][3])
 {
 	int line, column;
@@ -165,6 +166,7 @@ void draw (SDL_Surface *screen, int game[3][3])
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
 }
 
+/* Draw who is the winner at the end of the game */
 void drawWinner (SDL_Surface *screen, int winner)
 {
 	int x = screen->w / 2, y = screen->h / 2;

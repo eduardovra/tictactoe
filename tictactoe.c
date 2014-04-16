@@ -22,12 +22,14 @@
 int Winner = 0;
 int Game[3][3];
 
+/* Get a x, y coordinate and return what line and column it belongs to */
 void getLineAndColumn (int *line, int *column, Uint16 x, Uint16 y)
 {
 	*line = x / (WINDOW_WIDTH / 3);
 	*column = y / (WINDOW_HEIGHT / 3);
 }
 
+/* Capture any keyboard or mouse input */
 void input (int *line, int *column)
 {
 	SDL_Event event;
@@ -62,6 +64,7 @@ int get_random (int min, int max)
 	return ((rand() / (RAND_MAX + 1.0)) * range) + min;
 }
 
+/* Analyse game and check if there is a winner */
 int checkWinner (void)
 {
 	int l, c;
@@ -94,6 +97,7 @@ int checkWinner (void)
 	return winner;
 }
 
+/* Main game logic */
 void process (int line, int column)
 {
 	int l, c;
