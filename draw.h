@@ -7,7 +7,6 @@
 #define _DRAW_H_INCLUDED_
 
 #include <SDL.h>
-#include <SDL/SDL_ttf.h>
 
 enum {
 	EMPTY = 0,

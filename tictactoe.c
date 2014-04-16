@@ -13,7 +13,6 @@
 #include <time.h>
 
 #include <SDL.h>
-#include <SDL/SDL_ttf.h>
 
 #include "draw.h"
 
@@ -149,11 +148,6 @@ int main (int argc, char *argv[])
 		fprintf(stderr, "Unable to set %dx%d video: %s\n",
 				WINDOW_WIDTH, WINDOW_HEIGHT, SDL_GetError());
 		exit(1);
-	}
-
-	if ( TTF_Init() == -1 )
-	{
-		fprintf(stderr, "Unable to initialize SDL_ttf: %s \n", TTF_GetError());
 	}
 
 	/* seed pseudo random numbers generator */
