@@ -8,12 +8,6 @@
 
 #include <SDL.h>
 
-enum {
-	EMPTY = 0,
-	CIRCLE,
-	CROSS,
-};
-
 void draw (SDL_Surface * screen, int game[3][3]);
 
 void drawWinner (SDL_Surface *screen, int winner);

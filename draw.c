@@ -6,6 +6,7 @@
 #include <math.h>
 #include <assert.h>
 
+#include "tictactoe.h"
 #include "draw.h"
 
 #define GRID_COLOR SDL_MapRGB(SDL_GetVideoSurface()->format, 0xff,0xff,0xff)
@@ -153,9 +154,9 @@ void draw (SDL_Surface *screen, int game[3][3])
 			x = x_offset + (line * (screen->w / 3));
 			y = y_offset + (column * (screen->h / 3));
 			if (game[line][column] == CROSS)
-				drawCross(screen, x, y, CROSS_SIZE, CROSS_COLOR);
+				drawCross(screen, y, x, CROSS_SIZE, CROSS_COLOR);
 			else if (game[line][column] == CIRCLE)
-				drawCircle(screen, x, y, CIRCLE_SIZE, CIRCLE_COLOR);
+				drawCircle(screen, y, x, CIRCLE_SIZE, CIRCLE_COLOR);
 		}
 	}
 

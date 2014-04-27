@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : TicTacToe.c
+ Name        : tictactoe.c
  Author      : Eduardo Vieira
  Version     :
  Copyright   : Licensed under the beer license
@@ -14,10 +14,9 @@
 
 #include <SDL.h>
 
+#include "tictactoe.h"
 #include "draw.h"
-
-#define WINDOW_WIDTH		640
-#define WINDOW_HEIGHT		640
+#include "ai.h"
 
 int Winner = 0;
 int Game[3][3];
@@ -25,8 +24,8 @@ int Game[3][3];
 /* Get a x, y coordinate and return what line and column it belongs to */
 void getLineAndColumn (int *line, int *column, Uint16 x, Uint16 y)
 {
-	*line = x / (WINDOW_WIDTH / 3);
-	*column = y / (WINDOW_HEIGHT / 3);
+	*line = y / (WINDOW_WIDTH / 3);
+	*column = x / (WINDOW_HEIGHT / 3);
 }
 
 /* Capture any keyboard or mouse input */
@@ -48,6 +47,7 @@ void input (int *line, int *column)
 			case SDL_MOUSEMOTION:
 				break;
 			case SDL_QUIT:
+				exit(0);
 				Winner = -1;
 				break;
 			default:
@@ -97,11 +97,11 @@ int checkWinner (void)
 	return winner;
 }
 
-/* Main game logic */
+/* Main game logic. Takes an user move as input and generate a CPU move as reponse.
+ * Determine if there is a winner.
+ */
 void process (int line, int column)
 {
-	int l, c;
-
 	/* If the clicked slot is already filled, do nothing */
 	if (Game[line][column] != EMPTY)
 		return;
@@ -119,12 +119,24 @@ void process (int line, int column)
 
 	if (Winner != 0)
 		return;
+#if 1
+	int l, c;
 
-	/* Generate CPU random movement */
-	do {
-		l = get_random(0, 2);
-		c = get_random(0, 2);
-	} while (Game[l][c] != EMPTY);
+	/* Generate CPU movement */
+	st_move move = cpu_movement(Game);
+	l = move.line;
+	c = move.column;
+	printf("Generated intelligent CPU movement: line %d column %d\n", l, c);
+
+	/* Could not find an smart move */
+	if (l < 0 || c < 0) {
+		printf("Could not find a smart move\n");
+		/* Generate CPU random movement */
+		do {
+			l = get_random(0, 2);
+			c = get_random(0, 2);
+		} while (Game[l][c] != EMPTY);
+	}
 
 	/* Store computer movement */
 	printf("Computer movement: line %d column %d\n", l, c);
@@ -132,6 +144,7 @@ void process (int line, int column)
 
 	/* Check if there is a winner */
 	Winner = checkWinner();
+#endif
 }
 
 int main (int argc, char *argv[])
