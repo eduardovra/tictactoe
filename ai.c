@@ -40,12 +40,16 @@ int get_free_line(int game[3][3], int column)
 
 int is_diagonal (int line, int column)
 {
-	if (line == column)
+	if (line == 1 && column == 1)
 		return 1;
+	else if (line == 0 && column == 0)
+		return 2;
+	else if (line == 2 && column == 2)
+		return 2;
 	else if (line == 0 && column == 2)
-		return 2;
+		return 3;
 	else if (line == 2 && column == 0)
-		return 2;
+		return 3;
 	else
 		return 0;
 }
@@ -94,7 +98,7 @@ st_move find_fork(int game[3][3], int player)
 
 				int diagonal = is_diagonal(l, c);
 
-				if (diagonal == 1) {
+				if (diagonal == 1 || diagonal == 2) {
 					// check fork in diagonal 1
 					count_player = 0, count_empty = 0;
 
@@ -109,7 +113,7 @@ st_move find_fork(int game[3][3], int player)
 						forks++;
 					}
 				}
-				else if (diagonal == 2) {
+				if (diagonal == 1 || diagonal == 3) {
 					// check fork in diagonal 2
 					count_player = 0, count_empty = 0;
 
@@ -140,116 +144,80 @@ st_move find_fork(int game[3][3], int player)
 	return move;
 }
 
-st_move cpu_movement (int game[3][3])
+st_move find_win (int game[3][3], int player)
 {
 	int l, c;
+	st_move move = { .line = -1, .column = -1 };
+
+	for (l = 0; l < 3; l++) {
+		int count = 0;
+		for (c = 0; c < 3; c++) {
+			if (game[l][c] == player) {
+				if (++count == 2) {
+					move.line = l;
+					move.column = get_free_column(game, l);
+					if (move.column >= 0)
+						return move;
+				}
+			}
+		}
+	}
+
+	for (c = 0; c < 3; c++) {
+		int count = 0;
+		for (l = 0; l < 3; l++) {
+			if (game[l][c] == player) {
+				if (++count == 2) {
+					move.column = c;
+					move.line = get_free_line(game, c);
+					if (move.line >= 0)
+						return move;
+				}
+			}
+		}
+	}
+
+	if (game[0][0] == player && game[1][1] == player && game[2][2] == EMPTY) {
+		move.line = move.column = 2;
+		return move;
+	}
+	else if (game[1][1] == player && game[2][2] == player && game[0][0] == EMPTY) {
+		move.line = move.column = 0;
+		return move;
+	}
+	else if (game[2][0] == player && game[1][1] == player && game[0][2] == EMPTY) {
+		move.line = 0;
+		move.column = 2;
+		return move;
+	}
+	else if (game[0][2] == player && game[1][1] == player && game[2][0] == EMPTY) {
+		move.line = 2;
+		move.column = 0;
+		return move;
+	}
+	else if (game[1][1] == EMPTY && ((game[0][0] == player && game[2][2] == player) || (game[2][0] == player && game[0][2] == player))) {
+		move.line = move.column = 1;
+		return move;
+	}
+
+	return move;
+}
+
+st_move cpu_movement (int game[3][3])
+{
 	st_move move = { .line = -1, .column = -1 };
 	
 	/* Win: If you have two in a row, you can place a third to get three in a row. */
 	printf("Win\n");
-	for (l = 0; l < 3; l++) {
-		int count = 0;
-		for (c = 0; c < 3; c++) {
-			if (game[l][c] == CIRCLE) {
-				if (++count == 2) {
-					move.line = l;
-					move.column = get_free_column(game, l);
-					if (move.column >= 0)
-						return move;
-				}
-			}
-		}
-	}
-
-	for (c = 0; c < 3; c++) {
-		int count = 0;
-		for (l = 0; l < 3; l++) {
-			if (game[l][c] == CIRCLE) {
-				if (++count == 2) {
-					move.column = c;
-					move.line = get_free_line(game, c);
-					if (move.line >= 0)
-						return move;
-				}
-			}
-		}
-	}
-
-	if (game[0][0] == CIRCLE && game[1][1] == CIRCLE && game[2][2] == EMPTY) {
-		move.line = move.column = 2;
+	move = find_win(game, CIRCLE);
+	if (move.line >= 0 && move.column >=0)
 		return move;
-	}
-	else if (game[1][1] == CIRCLE && game[2][2] == CIRCLE && game[0][0] == EMPTY) {
-		move.line = move.column = 0;
-		return move;
-	}
-	else if (game[2][0] == CIRCLE && game[1][1] == CIRCLE && game[0][2] == EMPTY) {
-		move.line = 0;
-		move.column = 2;
-		return move;
-	}
-	else if (game[0][2] == CIRCLE && game[1][1] == CIRCLE && game[2][0] == EMPTY) {
-		move.line = 2;
-		move.column = 0;
-		return move;
-	}
-	else if (game[1][1] == EMPTY && ((game[0][0] == CIRCLE && game[2][2] == CIRCLE) || (game[2][0] == CIRCLE && game[0][2] == CIRCLE))) {
-		move.line = move.column = 1;
-		return move;
-	}
 
 	/* Block: If the opponent has two in a row, you must play the third to block the opponent. */
 	printf("Block\n");
-	for (l = 0; l < 3; l++) {
-		int count = 0;
-		for (c = 0; c < 3; c++) {
-			if (game[l][c] == CROSS) {
-				if (++count == 2) {
-					move.line = l;
-					move.column = get_free_column(game, l);
-					if (move.column >= 0)
-						return move;
-				}
-			}
-		}
-	}
-
-	for (c = 0; c < 3; c++) {
-		int count = 0;
-		for (l = 0; l < 3; l++) {
-			if (game[l][c] == CROSS) {
-				if (++count == 2) {
-					move.column = c;
-					move.line = get_free_line(game, c);
-					if (move.line >= 0)
-						return move;
-				}
-			}
-		}
-	}
-
-	if (game[0][0] == CROSS && game[1][1] == CROSS && game[2][2] == EMPTY) {
-		move.line = move.column = 2;
+	move = find_win(game, CROSS);
+	if (move.line >= 0 && move.column >=0)
 		return move;
-	}
-	else if (game[1][1] == CROSS && game[2][2] == CROSS && game[0][0] == EMPTY) {
-		move.line = move.column = 0;
-		return move;
-	}
-	else if (game[2][0] == CROSS && game[1][1] == CROSS && game[0][2] == EMPTY) {
-		move.line = 0;
-		move.column = 2;
-		return move;
-	}
-	else if (game[0][2] == CROSS && game[1][1] == CROSS && game[2][0] == EMPTY) {
-		move.line = 2;
-		move.column = 0;
-		return move;
-	}
-	else if (game[1][1] == EMPTY && ((game[0][0] == CROSS && game[2][2] == CROSS) || (game[2][0] == CROSS && game[0][2] == CROSS))) {
-		move.line = move.column = 1;
-		return move;
-	}
 
 	/* Fork: Create an opportunity where you have two threats to win (two non-blocked lines of 2). */
 	printf("Fork\n");

@@ -9,8 +9,6 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 #include <SDL.h>
 
@@ -48,20 +46,10 @@ void input (int *line, int *column)
 				break;
 			case SDL_QUIT:
 				exit(0);
-				Winner = -1;
-				break;
 			default:
 				fprintf(stderr, "Unkown event %u\n", event.type);
-				break;
 		}
 	}
-}
-
-/* return a random value between [min,max] */
-int get_random (int min, int max)
-{
-	int range = ( max - min ) + 1;
-	return ((rand() / (RAND_MAX + 1.0)) * range) + min;
 }
 
 /* Analyse game and check if there is a winner */
@@ -119,32 +107,16 @@ void process (int line, int column)
 
 	if (Winner != 0)
 		return;
-#if 1
-	int l, c;
 
 	/* Generate CPU movement */
 	st_move move = cpu_movement(Game);
-	l = move.line;
-	c = move.column;
-	printf("Generated intelligent CPU movement: line %d column %d\n", l, c);
-
-	/* Could not find an smart move */
-	if (l < 0 || c < 0) {
-		printf("Could not find a smart move\n");
-		/* Generate CPU random movement */
-		do {
-			l = get_random(0, 2);
-			c = get_random(0, 2);
-		} while (Game[l][c] != EMPTY);
-	}
 
 	/* Store computer movement */
-	printf("Computer movement: line %d column %d\n", l, c);
-	Game[l][c] = CIRCLE;
+	printf("Computer movement: line %d column %d\n", move.line, move.column);
+	Game[move.line][move.column] = CIRCLE;
 
 	/* Check if there is a winner */
 	Winner = checkWinner();
-#endif
 }
 
 int main (int argc, char *argv[])
@@ -166,9 +138,6 @@ int main (int argc, char *argv[])
 				WINDOW_WIDTH, WINDOW_HEIGHT, SDL_GetError());
 		exit(1);
 	}
-
-	/* seed pseudo random numbers generator */
-	srand(time(NULL));
 
 	/* Init game state */
 	for (line = 0; line < 3; line ++) {
