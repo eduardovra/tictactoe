@@ -12,7 +12,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS)
 
-$(OBJS): %.o: %.c %.dep
+$(OBJS): %.o: %.c %.dep $(SRCS)
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 $(DEPS): %.dep: %.c Makefile

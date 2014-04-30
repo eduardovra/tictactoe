@@ -10,6 +10,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "tictactoe.h"
 #include "ai.h"
 
@@ -35,6 +36,108 @@ int get_free_line(int game[3][3], int column)
 	}
 
 	return -1;
+}
+
+int is_diagonal (int line, int column)
+{
+	if (line == column)
+		return 1;
+	else if (line == 0 && column == 2)
+		return 2;
+	else if (line == 2 && column == 0)
+		return 2;
+	else
+		return 0;
+}
+
+st_move find_fork(int game[3][3], int player)
+{
+	int l, c;
+	int l2, c2;
+	int count_player = 0, count_empty = 0, forks = 0;
+	int game_copy[3][3];
+	st_move move = { .line = -1, .column = -1 };
+
+	for (l = 0; l < 3; l++) {
+		for (c = 0; c < 3; c++) {
+			if (game[l][c] == EMPTY) {
+				memcpy(game_copy, game, sizeof(game));
+				game_copy[l][c] = player;
+
+				// check fork in horizontal
+				count_player = 0, count_empty = 0;
+
+				for (c2 = 0; c2 < 3; c2++) {
+					if (game_copy[l][c2] == player)
+						count_player++;
+					else if (game_copy[l][c2] == EMPTY)
+						count_empty++;
+				}
+
+				if (count_player == 2 && count_empty == 1) {
+					forks++;
+				}
+
+				// check fork in vertical
+				count_player = 0, count_empty = 0;
+
+				for (l2 = 0; l2 < 3; l2++) {
+					if (game_copy[l2][c] == player)
+						count_player++;
+					else if (game_copy[l2][c] == EMPTY)
+						count_empty++;
+				}
+
+				if (count_player == 2 && count_empty == 1) {
+					forks++;
+				}
+
+				int diagonal = is_diagonal(l, c);
+
+				if (diagonal == 1) {
+					// check fork in diagonal 1
+					count_player = 0, count_empty = 0;
+
+					for (c2 = 0, l2 = 0; c2 < 3 && l2 < 3; c2++, l2++) {
+						if (game_copy[l2][c2] == EMPTY)
+							count_empty++;
+						else if (game_copy[l2][c2] == player)
+							count_player++;
+					}
+
+					if (count_player == 2 && count_empty == 1) {
+						forks++;
+					}
+				}
+				else if (diagonal == 2) {
+					// check fork in diagonal 2
+					count_player = 0, count_empty = 0;
+
+					for (c2 = 0, l2 = 2; c2 < 3 && l2 >= 0; c2++, l2--) {
+						if (game_copy[l2][c2] == EMPTY)
+							count_empty++;
+						else if (game_copy[l2][c2] == player)
+							count_player++;
+					}
+
+					if (count_player == 2 && count_empty == 1) {
+						forks++;
+					}
+				}
+
+				// if forks >= 2 return l, c
+				if (forks >= 2) {
+					move.line = l;
+					move.column = c;
+					return move;
+				}
+				else
+					forks = 0;
+			}
+		}
+	}
+
+	return move;
 }
 
 st_move cpu_movement (int game[3][3])
@@ -150,9 +253,15 @@ st_move cpu_movement (int game[3][3])
 
 	/* Fork: Create an opportunity where you have two threats to win (two non-blocked lines of 2). */
 	printf("Fork\n");
+	move = find_fork(game, CIRCLE);
+	if (move.line >= 0 && move.column >=0)
+		return move;
 
 	/* Blocking an opponent's fork: If there is a configuration where the opponent can fork, you must block that fork. */
 	printf("Block fork\n");
+	move = find_fork(game, CROSS);
+	if (move.line >= 0 && move.column >=0)
+		return move;
 
 	/* Center: You play the center if open. */
 	printf("Center\n");
